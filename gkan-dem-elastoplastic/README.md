@@ -1,47 +1,45 @@
 # gkan-dem-elastoplastic
 
-Code accompanying the paper *A Deep Energy Method for Elasto-Plastic Phase-Field Fracture in Quasi-Brittle Solids*.
+Code for the paper
 
-The framework couples a length-scale-insensitive elasto-plastic phase-field model (AT2 + Rankine perfect plasticity in effective stress space, with analytical yield-stress calibration) with a hybrid graph Kolmogorov-Arnold network deep energy method (GKAN-DEM): the displacement field is represented by a graph neural network, while the damage field is solved on the mesh.
+> P. Zhang, K. Tang. *A deep energy method for elasto-plastic phase-field fracture in quasi-brittle solids*. **Theoretical and Applied Fracture Mechanics** 149, 106004 (2027). https://doi.org/10.1016/j.tafmec.2026.106004
 
-## Repository layout
+Length-scale-insensitive elasto-plastic phase-field model (AT2 with Rankine perfect plasticity in effective stress space). The displacement field is represented by a graph Kolmogorov-Arnold network (PyTorch); the damage field is solved on the mesh. Finite element reference solvers (Julia/Gridap) are provided for every benchmark.
 
-| Folder | Content |
-|---|---|
-| `fem/` | Reference finite element solver (Julia, Gridap.jl) for all benchmarks |
-| `dem/` | GKAN-DEM deep-learning solver (PyTorch) — to be released upon publication |
+## Contents
 
-## FEM reference solver
+| Benchmark | GKAN-DEM (`dem/`) | Finite element reference (`fem/`) |
+| --- | --- | --- |
+| 1D homogeneous bar | `dem_fang2020_bar.py` | `bar_1d.jl` |
+| 1D reduced-section bar | `dem_fang2020_bar_gamma.py` | `bar_gamma.jl` |
+| Double-edge-notched tension | `dem_fang2020_dent.py` | `dent.jl` |
+| L-shaped panel | `dem_fang2020_lplate.py` | `lplate.jl` |
+| Cyclic three-point bending | `dem_fang2020_cyclic.py` | `cyclic_bending.jl` |
 
-Standalone Julia scripts, one per benchmark. Each script meshes the geometry with Gmsh, runs the staggered elasto-plastic phase-field solve over a sweep of regularization lengths, and writes force-displacement curves (CSV), damage snapshots (PNG) and full field states (VTK) to `outputs/`.
+`dem/study_fang2020_dent_network.py`: network architecture, field-split and mesh studies (DENT).
+`dem/rankine_gradient_check.py`: automatic-differentiation check of the Rankine incremental potential.
 
-| Script | Benchmark |
-|---|---|
-| `fem/bar_1d.jl` | 1D homogeneous softening bar (strength recovery, length-scale insensitivity) |
-| `fem/bar_gamma.jl` | 1D reduced-section bar (Gamma-convergence of the crack surface) |
-| `fem/dent.jl` | Double-edge-notched tension specimen (notch offset and length-scale sweep) |
-| `fem/lplate.jl` | L-shaped panel |
-| `fem/cyclic_bending.jl` | Notched beam under cyclic three-point bending (half model) |
+## Requirements
 
-### Requirements
+- Python 3.10+: `dem/requirements.txt`.
+- Julia: `fem/Project.toml` and `fem/Manifest.toml`.
 
-Julia >= 1.9 with [Gridap.jl](https://github.com/gridap/Gridap.jl), GridapGmsh.jl, Gmsh.jl and Plots.jl:
+Physical and numerical parameters are set in each script (constants, command-line options or environment variables).
 
-```julia
-using Pkg
-Pkg.activate("fem")
-Pkg.instantiate()
+## Citation
+
+```bibtex
+@article{Zhang2027GKANElastoplastic,
+  author  = {Zhang, Peng and Tang, Keke},
+  title   = {A deep energy method for elasto-plastic phase-field fracture in quasi-brittle solids},
+  journal = {Theoretical and Applied Fracture Mechanics},
+  volume  = {149},
+  pages   = {106004},
+  year    = {2027},
+  doi     = {10.1016/j.tafmec.2026.106004}
+}
 ```
 
-### Running
+## License
 
-```bash
-cd fem
-julia --project=. dent.jl
-```
-
-The 2D scripts sweep all configurations of the paper and support restart: completed cases (marked by a `DONE` file) are skipped on re-run.
-
-## DEM solver
-
-The GKAN-DEM solver (PyTorch) will be released in `dem/` upon publication of the article.
+MIT, see `LICENSE`.
