@@ -1,0 +1,10 @@
+outputs/
+.venv/
+*.msh
+*.vtu
+*.pvtu
+*.pth
+*.npz
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
